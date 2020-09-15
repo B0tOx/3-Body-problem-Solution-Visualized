@@ -3,7 +3,6 @@ float fmax = 0;
 ArrayList<PVector> stars;
 int steps = 100;
 
-
 void setup() {
   //size(800, 600);
   fullScreen();
