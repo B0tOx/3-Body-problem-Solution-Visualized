@@ -1,82 +1,58 @@
-import java.util.Arrays;
+ArrayList<Planet> planets;
+float fmax = 0;
+ArrayList<PVector> stars;
+int steps = 100;
 
-class Planet {
-  PVector pos;
-  PVector vel;
-  float radius;
-  float mass;
-  float r, g, b;
-  PVector currVel;
-  ArrayList<PVector> posStore;
 
-  int traillength = 200;
-  float Grav = 1;
+void setup() {
+  //size(800, 600);
+  fullScreen();
+  frameRate(1000);
 
-  Planet(float x, float y, float vx, float vy, float r, float m, float re, float g, float b) {
-    this.pos = new PVector(x, y);
-    this.vel = new PVector(vx, vy);
-    this.radius = r;
-    this.mass = m;
-    this.r = re;
-    this.g = g;
-    this.b = b;
-    this.posStore = new ArrayList<PVector>(traillength);
-    for (int i = 0; i < traillength; i++) {
-      posStore.add(new PVector(this.pos.x, this.pos.y));
-    }
+  planets = new ArrayList<Planet>();
+
+  planets.add(new Planet(0.97000436, 0.24308731, 0.466203685, -0.43236573, 60, 1, 0, 0, 255));
+  planets.add(new Planet(-0.97000436, -0.24308731, 0.466203685, -0.43236573, 60, 1, 255, 0, 0));
+  planets.add(new Planet(0, 0, -0.93240737, 0.86473146, 60, 1, 255, 255, 255));
+
+  stars = new ArrayList<PVector>();
+  for (int i = 0; i < 500; i++) {
+    stars.add(new PVector(random(0, width), random(0, height)));
+  }
+   for (int i = 0; i < steps; i++) {
+    pre();
+  }
+}
+
+void draw() {  
+  background(0);
+  for (int i = 0; i < stars.size()-1; i++) {
+    PVector star = stars.get(i);
+    stroke(255);
+    point(star.x, star.y);
   }
 
-  void grav(Planet planet1, ArrayList<Planet> planets) {
-    for (Planet planet2 : planets) {
-      if (planet1 == planet2) continue;
-      PVector forceDir = PVector.sub(planet2.pos, planet1.pos); 
-      float d = forceDir.magSq();
-      forceDir.normalize();
-      PVector f = forceDir.mult(Grav * planet2.mass / d);
-      PVector temp = new PVector(f.x, f.y);   
-      vel = planet1.vel.add(temp.mult(0.01));
-    }
+  pushMatrix();
+  translate(width/2, height/2);
+  for (Planet planet1 : planets) {
+    planet1.show();
+  }
+  popMatrix();
+
+  for (Planet planet1 : planets) {
+    planet1.grav(planet1, planets);
+  }
+  for (Planet planet1 : planets) {
+    planet1.updateVel();
+  }
+}
+
+void pre() {
+  for (Planet planet1 : planets) {
+    planet1.grav(planet1, planets);
   }
 
-  void updateVel() {
-    PVector temp = new PVector(vel.x, vel.y); 
-    pos.add(temp.mult(0.01));
-    posStore.add(0, new PVector(this.pos.x, this.pos.y));
-    if ( posStore.size() >= traillength) posStore.remove(traillength);
-  }
-
-  float exp(float a) {
-    float a1 = 255 * (pow(0.97, a));
-    return a1;
-  }
-
-  float rad(float a) {
-    float a1 = -0.25 * a + 60;
-    return a1;
-  }
-
-  void show() {
-    for (int i = posStore.size()-1; i > -1; i--) {
-      PVector pos2 = posStore.get(i);
-      float a = map(i, 0, posStore.size(), 0, 255);
-      float r1 = r;
-      float g1 = g;
-      float b1 = b;
-      if (i != 0) {
-        r1 = r/2;
-        g1 = g/2;
-        b1 = b/2;
-      } else {
-        r1 = r;
-        g1 = g;
-        b1 = b;
-      }
-      float a1 = exp(a);
-      float rad1 = rad(a);
-
-      noStroke();
-      fill(r1, g1, b1, a1);
-      if (pos2 != null) circle(pos2.x * 400, pos2.y * 400, rad1);
-    }
+  for (Planet planet1 : planets) {
+    planet1.updateVel();
   }
 }
