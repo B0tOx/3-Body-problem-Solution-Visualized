@@ -44,10 +44,15 @@ class Planet {
     posStore.add(0, new PVector(this.pos.x, this.pos.y));
     if ( posStore.size() >= traillength) posStore.remove(traillength);
   }
-  
+
   float exp(float a) {
-    float a2 = 255 * (pow(0.97, a));
-    return a2;
+    float a1 = 255 * (pow(0.97, a));
+    return a1;
+  }
+
+  float rad(float a) {
+    float a1 = -0.25 * a + 60;
+    return a1;
   }
 
   void show() {
@@ -61,17 +66,17 @@ class Planet {
         r1 = r/2;
         g1 = g/2;
         b1 = b/2;
-      }
-      else{
+      } else {
         r1 = r;
         g1 = g;
         b1 = b;
       }
       float a1 = exp(a);
+      float rad1 = rad(a);
 
       noStroke();
       fill(r1, g1, b1, a1);
-      if (pos2 != null) circle(pos2.x * 400, pos2.y * 400, this.radius);
+      if (pos2 != null) circle(pos2.x * 400, pos2.y * 400, rad1);
     }
   }
 }
